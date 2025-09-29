@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: ml_hourly_by_building
+    columns:
+      - name: ts
+        tests: [not_null]
+      - name: building_id
+        tests: [not_null]
+      - name: itp_id
+        tests: [not_null]
+    tests:
+      - unique:
+          column_name: "ts || '-' || itp_id::text"
+
+  - name: ml_daily_by_building
+    columns:
+      - name: ts
+        tests: [not_null]
+      - name: building_id
+        tests: [not_null]
+      - name: itp_id
+        tests: [not_null]
+    tests:
+      - unique:
+          column_name: "ts || '-' || itp_id::text"
+
+  - name: ml_hourly_by_district
+    columns:
+      - name: ts
+        tests: [not_null]
+      - name: district_id
+        tests: [not_null]

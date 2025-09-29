@@ -1,0 +1,14 @@
+name: service_db
+version: "1.0.0"
+config-version: 2
+
+profile: service_db
+
+model-paths: ["models"]
+test-paths: ["tests"]
+
+models:
+  service_db:
+    features:
+      +schema: features
+      +materialized: view

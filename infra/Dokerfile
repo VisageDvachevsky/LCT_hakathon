@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential gcc curl tini tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY infra/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+
+# Копируем ETL код
+COPY etl /app/etl
+
+# Директории для артефактов и данных
+RUN mkdir -p /app/artifacts/quality_reports && mkdir -p /app/data/raw
+
+ENV PYTHONPATH=/app
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["python", "-m", "etl.run_etl"]

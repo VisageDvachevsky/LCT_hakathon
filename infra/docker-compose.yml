@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  dataops:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    container_name: dataops
+    env_file:
+      - .env
+    environment:
+      - RUN_MODE=${RUN_MODE:-once}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ../etl:/app/etl:ro
+      - ../artifacts:/app/artifacts
+      - ../data/raw:/app/data/raw
+    working_dir: /app
+    command: ["python", "-m", "etl.run_etl"]
+    restart: unless-stopped
+    # depends_on:
+    #   - timescaledb   # БД поднимает дата-инженер; здесь опционально
+
+# Примечание:
+# - В dev вы можете добавить сервис timescaledb в этот compose, но по ТЗ это зона дата-инженера.
+# - Для логов Loki: контейнер пишет структурированный stdout, который может быть собран агентом Loki/Promtail.

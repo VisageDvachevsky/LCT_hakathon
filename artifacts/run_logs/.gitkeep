@@ -1,0 +1,2 @@
+# Placeholder to keep directory in VCS.
+# Логи запусков скриптов и контейнера пишутся сюда (через tee из shell-скриптов).

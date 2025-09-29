@@ -1,0 +1,81 @@
+{
+  "data_asset_type": "table",
+  "expectation_suite_name": "stage_parsed_measurements_suite",
+  "ge_cloud_id": null,
+  "meta": {
+    "notes": "DQ для stage_parsed_measurements: базовые проверки схемы, not null и диапазоны по метрикам."
+  },
+  "expectations": [
+    {
+      "expectation_type": "expect_table_columns_to_match_ordered_list",
+      "kwargs": {
+        "column_list": [
+          "load_id",
+          "source_file",
+          "row_num",
+          "ts",
+          "building_code",
+          "itp_code",
+          "meter_code",
+          "metric",
+          "value",
+          "unit",
+          "quality",
+          "reason",
+          "inserted_at"
+        ]
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "ts" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "building_code" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "itp_code" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "meter_code" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "metric" }
+    },
+    {
+      "expectation_type": "expect_column_values_to_not_be_null",
+      "kwargs": { "column": "value" }
+    },
+    {
+      "expectation_type": "expect_compound_columns_to_be_unique",
+      "kwargs": {
+        "column_list": ["ts", "meter_code", "metric", "source_file"]
+      }
+    },
+    {
+      "expectation_type": "expect_column_values_to_be_between",
+      "kwargs": {
+        "column": "value",
+        "min_value": -20,
+        "max_value": 150,
+        "row_condition": "metric in ('T1','T2')",
+        "condition_parser": "great_expectations__experimental"
+      },
+      "meta": { "notes": "Температуры T1/T2 в допустимом физическом диапазоне." }
+    },
+    {
+      "expectation_type": "expect_column_min_to_be_between",
+      "kwargs": {
+        "column": "value",
+        "min_value": 0,
+        "row_condition": "metric in ('flow_supply','flow_return','consumption_period','consumption_cumulative','pump_runtime_hours')",
+        "condition_parser": "great_expectations__experimental"
+      },
+      "meta": { "notes": "Потоки/потребление/наработка — неотрицательные." }
+    }
+  ]
+}

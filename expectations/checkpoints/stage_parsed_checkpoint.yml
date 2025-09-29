@@ -1,0 +1,33 @@
+name: stage_parsed_checkpoint
+config_version: 1
+class_name: Checkpoint
+module_name: great_expectations.checkpoint
+run_name_template: "%Y-%m-%d-%H%M%S-stage_parsed"
+validations:
+  - name: stage_parsed_measurements_validation
+    expectation_suite_name: stage_parsed_measurements_suite
+    action_list:
+      - name: store_validation_result
+        action:
+          class_name: StoreValidationResultAction
+      - name: store_evaluation_params
+        action:
+          class_name: StoreEvaluationParametersAction
+      - name: update_data_docs
+        action:
+          class_name: UpdateDataDocsAction
+    runtime_configuration:
+      result_format:
+        result_format: SUMMARY
+        partial_unexpected_count: 20
+    # Рантайм-запрос по текущему load_id (передавайте через переменную окружения LOAD_ID)
+    batch_request:
+      runtime_parameters:
+        query: >
+          SELECT load_id, source_file, row_num, ts, building_code, itp_code, meter_code, metric, value, unit, quality, reason, inserted_at
+          FROM {{ STAGE_SCHEMA | default('stage') }}.stage_parsed_measurements
+          WHERE load_id = '{{ LOAD_ID }}'
+      batch_identifiers:
+        default_identifier_name: "{{ LOAD_ID }}"
+      data_connector_name: runtime_data_connector
+      datasource_name: postgres_stage
